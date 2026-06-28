@@ -31,6 +31,7 @@ tile_size = 10
 main_menu=True
 level=1
 game_over=0
+game_over_ball=0
 max_levels=2
 
 
@@ -424,6 +425,8 @@ class Golf_Ball(pygame.sprite.Sprite):
         if pygame.sprite.spritecollide(player,balls,False) and player.movement==0 and self.vel_x==0 and self.vel_y==0:
             player.can_hit==True
 
+        if pygame.sprite.spritecollide(self,goals,False):
+            globals()['game_over_ball']=1
 
         #update cords
         self.rect.x += dx
@@ -481,12 +484,13 @@ while run==True:
             player.reset(world)
 
         #player won
-        if game_over==1:
+        if game_over==1 and game_over_ball==1:
             level += 1
             if level <= max_levels:
                 world_data=[]
                 world=World(reset_level(level))
                 game_over=0
+                game_over_ball=0
                 player.reset(world)
     
 
