@@ -246,6 +246,8 @@ class Player():
             #check collision goal
             if pygame.sprite.spritecollide(self, goals,False):
                 globals()['game_over'] = 1
+            else:
+                globals()['game_over'] = 0
 
             #draws player
             screen.blit(self.image[0],self.rect)
@@ -427,6 +429,8 @@ class Golf_Ball(pygame.sprite.Sprite):
 
         if pygame.sprite.spritecollide(self,goals,False):
             globals()['game_over_ball']=1
+        else:
+            globals()['game_over_ball']=0
 
         #update cords
         self.rect.x += dx
