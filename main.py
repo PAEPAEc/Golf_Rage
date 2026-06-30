@@ -4,7 +4,7 @@ from pygame.locals import *
 import numpy as np
 import pickle
 from os import path
-
+from copy import deepcopy
 
 
 
@@ -248,9 +248,38 @@ class Player():
                 globals()['game_over'] = 1
             else:
                 globals()['game_over'] = 0
+            
+            if self.movement==1:
+                cords=deepcopy(self.rect)
+                if self.power<7:
+                    screen.blit(self.power_imgs[0],(cords[0]-15,cords[1]))
+                elif self.power<14:
+                    screen.blit(self.power_imgs[1],(cords[0]-15,cords[1]))
+                elif self.power<21:
+                    screen.blit(self.power_imgs[2],(cords[0]-15,cords[1]))
+                elif self.power<29:
+                    screen.blit(self.power_imgs[3],(cords[0]-15,cords[1]))
+                elif self.power<36:
+                    screen.blit(self.power_imgs[4],(cords[0]-15,cords[1]))
+                elif self.power<43:
+                    screen.blit(self.power_imgs[5],(cords[0]-15,cords[1]))
+                elif self.power<50:
+                    screen.blit(self.power_imgs[6],(cords[0]-15,cords[1]))
+                elif self.power<57:
+                    screen.blit(self.power_imgs[7],(cords[0]-15,cords[1]))
+                elif self.power<54:
+                    screen.blit(self.power_imgs[8],(cords[0]-15,cords[1]))
+                elif self.power<71:
+                    screen.blit(self.power_imgs[9],(cords[0]-15,cords[1]))
+                elif self.power<79:
+                    screen.blit(self.power_imgs[10],(cords[0]-15,cords[1]))
+                elif self.power<86:
+                    screen.blit(self.power_imgs[11],(cords[0]-15,cords[1]))
+                else:
+                    screen.blit(self.power_imgs[12],(cords[0]-15,cords[1]))
 
-            #draws player
-            screen.blit(self.image[0],self.rect)
+        #draws player
+        screen.blit(self.image[0],self.rect)
 
 
     def reset(self,world:World):
@@ -274,6 +303,13 @@ class Player():
         self.movement=0
         self.l_counter=0
         self.r_counter=0
+
+        #power gauge
+        self.power_imgs=[]
+        for i in range(13):
+            imag = pygame.image.load(f'img/power{i}.png')
+            imag = pygame.transform.scale(imag,(10,30))
+            self.power_imgs.append(imag)
 
         self.angle=90
         self.power=100
@@ -357,8 +393,16 @@ class Golf_Ball(pygame.sprite.Sprite):
     def __init__(self,x,y):
         pygame.sprite.Sprite.__init__(self)
         img = pygame.image.load('img/ender_pearl.png')
-        self.image = pygame.transform.scale(img, (10,10))
+        self.ball_R = 10
+        self.image = pygame.transform.scale(img, (self.ball_R,self.ball_R))
         self.rect=self.image.get_rect()
+
+        arrowimg = pygame.image.load('img/arrow.png')
+        self.arrow_h=60
+        self.arrow_w=20
+        self.arrow_img = pygame.transform.scale(arrowimg, (self.arrow_w,self.arrow_h))
+
+
 
         self.rect.x=x
         self.rect.y=y
@@ -438,6 +482,16 @@ class Golf_Ball(pygame.sprite.Sprite):
         if self.rect.bottom > screen_h:
             self.rect.bottom = screen_h
         
+
+
+        #targetting arrow
+        if player.movement==1:
+            cords=deepcopy(self.rect.center)
+            if player.angle<=90:
+                screen.blit(pygame.transform.rotate(self.arrow_img, player.angle-90), (cords[0]-self.ball_R/2+self.arrow_w*np.cos(player.angle*np.pi/180)/2.5,cords[1]-self.arrow_h*np.sin(player.angle*np.pi/180)-self.arrow_w/3*np.cos(player.angle*np.pi/180)))
+            else:
+                screen.blit(pygame.transform.rotate(self.arrow_img, player.angle-90), (cords[0]+self.arrow_h*np.cos(player.angle*np.pi/180),cords[1]-self.arrow_h*np.sin(player.angle*np.pi/180)+self.arrow_w/1.5*np.cos(player.angle*np.pi/180)))
+
         #draws ball
         screen.blit(self.image,self.rect)
     
@@ -498,11 +552,10 @@ while run==True:
                 player.reset(world)
     
 
-        #test angle i power
-        draw_text(f'A={player.angle}',font_test,white,900,10)
-        draw_text(f'p={player.power}',font_test,white,900,60)
-
-        draw_text(f'g={game_over}',font_test,white,900,110)
+        #test
+        #draw_text(f'A={player.angle}',font_test,white,900,10)
+        #draw_text(f'p={player.power}',font_test,white,900,60)
+        #draw_text(f'g={game_over}',font_test,white,900,110)
 
 
     for event in pygame.event.get():
