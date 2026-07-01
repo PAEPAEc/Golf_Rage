@@ -1,4 +1,6 @@
 # Golf_Rage
+Celem gry jest dotarcie do flagi postacią i piłką
+
 Sterowanie:
 poruszanie strzałkami oparte na prędkości (nie można jej zmienić w powietrzu aby się zatrzymać trzeba zwolnić poprzez przyśpieszenie w przeciwnym kierunku bądź tarcie)
 
