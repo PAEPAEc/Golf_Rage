@@ -5,6 +5,7 @@ import numpy as np
 import pickle
 from os import path
 from copy import deepcopy
+import random
 
 
 
@@ -32,16 +33,15 @@ main_menu=True
 level=1
 game_over=0
 game_over_ball=0
-max_levels=2
+max_levels=8
 
 
 #define colours
 white=(255,255,255)
 
 #load images here
-skybox = pygame.image.load('img/skybox.png')
-player_img = pygame.image.load('img/test_player.png')
-skybox_img = pygame.transform.scale(skybox, (1000,1000))
+skybox = [pygame.image.load('img/back/menu.png'),pygame.image.load('img/back/Plains.png'),pygame.image.load('img/back/Ice_Spikes.png'),pygame.image.load('img/back/Desert.jpg'),pygame.image.load('img/back/End.png')]
+
 r_img = pygame.image.load('img/R.png')
 start_img = pygame.transform.scale(pygame.image.load('img/start.png'),(300,100))
 quit_img = pygame.transform.scale(pygame.image.load('img/quit.png'),(300,100))
@@ -130,7 +130,7 @@ class Player():
                 if key[pygame.K_LEFT]:
                     if self.on_the_ground==True:
                         if self.l_counter==1:
-                            if self.vel_x>-7:
+                            if self.vel_x>-6:
                                 self.vel_x-=2
                                 self.l_counter=0
                         else: self.l_counter+=1
@@ -138,7 +138,7 @@ class Player():
                 if key[pygame.K_RIGHT]: 
                     if self.on_the_ground==True:
                         if self.r_counter==1:
-                            if self.vel_x<7:
+                            if self.vel_x<6:
                                 self.vel_x+=2
                                 self.r_counter=0
                         else: self.r_counter+=1
@@ -165,7 +165,7 @@ class Player():
                 #check collision
                 for tile in self.world.tile_list:
                     #collisions x 
-                    if tile[1].colliderect(self.rect.x+dx,self.rect.y,self.width,self.height):
+                    if tile[1].colliderect(self.rect.x+dx+0.5,self.rect.y,self.width,self.height):
                         dx=0
                     #collisions y
                     if tile[1].colliderect(self.rect.x,self.rect.y+dy, self.width,self.height):
@@ -188,7 +188,27 @@ class Player():
                                 self.vel_x-=1
                             elif self.vel_x<0:
                                 self.vel_x+=1
-
+                        elif tile[2]==2:
+                            if abs(self.vel_x) < 1:
+                                self.vel_x=0
+                            elif self.vel_x>0:
+                                self.vel_x-=0.1
+                            elif self.vel_x<0:
+                                self.vel_x+=0.1
+                        elif tile[2]==3:
+                            if abs(self.vel_x) < 1:
+                                self.vel_x=0
+                            elif self.vel_x>0:
+                                self.vel_x-=1
+                            elif self.vel_x<0:
+                                self.vel_x+=1
+                        elif tile[2]==4:
+                            if abs(self.vel_x) < 1:
+                                self.vel_x=0
+                            elif self.vel_x>0:
+                                self.vel_x-=1
+                            elif self.vel_x<0:
+                                self.vel_x+=1
 
                 
 
@@ -197,8 +217,6 @@ class Player():
                 self.rect.x += dx
                 self.rect.y += dy
 
-                if self.rect.bottom > screen_h:
-                    self.rect.bottom = screen_h
             
 
 
@@ -286,7 +304,7 @@ class Player():
         for ball in balls:
             ball.kill()
             
-        img = pygame.image.load('img/test_player.png')
+        img = pygame.image.load('img/player.png')
         self.image = [pygame.transform.scale(img, (40,50))]
         self.rect=self.image[0].get_rect()
         self.rect.x = world.player_x
@@ -307,7 +325,7 @@ class Player():
         #power gauge
         self.power_imgs=[]
         for i in range(13):
-            imag = pygame.image.load(f'img/power{i}.png')
+            imag = pygame.image.load(f'img/power/power{i}.png')
             imag = pygame.transform.scale(imag,(10,30))
             self.power_imgs.append(imag)
 
@@ -337,19 +355,97 @@ class World():
         self.tile_list=[]
 
         #load tile images
-        tile_dirt=pygame.image.load('img/dirt.png')
+        tile_dirt=[pygame.image.load('img/dirt/dirt.png'),pygame.image.load('img/dirt/coarse_dirt.png'),pygame.image.load('img/dirt/rooted_dirt.png')]
+        tile_bedrock=pygame.image.load('img/bedrock.png')
+        tile_ice=[pygame.image.load('img/ice/ice.png'),pygame.image.load('img/ice/packed_ice.png'),pygame.image.load('img/ice/blue_ice.png')]
+        tile_stone=[pygame.image.load('img/stone/cobbled_deepslate.png'),pygame.image.load('img/stone/deepslate.png'),pygame.image.load('img/stone/cobblestone.png'),pygame.image.load('img/stone/stone.png'),]
+        tile_wood=pygame.image.load('img/wood/spruce_log.png')
+        tile_snow=pygame.image.load('img/ice/snow.png')
+        tile_leaves=[pygame.image.load('img/wood/azalea_leaves.png'),pygame.image.load('img/wood/flowering_azalea_leaves.png')]
+        tile_sand=[pygame.image.load('img/sand/sand.png'),pygame.image.load('img/sand/red_sand.png')]
+        tile_sandstone=pygame.image.load('img/sand/sandstone_bottom.png')
+        tile_end_stone=pygame.image.load('img/stone/end_stone.png')
 
         row_count=0
         for row in data:
             col_count=0
             for tile in row:
                 if tile ==1:
-                    img = pygame.transform.scale(tile_dirt, (tile_size, tile_size))
+                    img = pygame.transform.scale(tile_dirt[random.randint(0,2)], (tile_size, tile_size))
                     img_rect = img.get_rect()
                     img_rect.x=col_count * tile_size
                     img_rect.y=row_count * tile_size
                     tile=(img,img_rect,1)
                     self.tile_list.append(tile)
+                elif tile ==-1: 
+                    img = pygame.transform.scale(tile_bedrock, (tile_size, tile_size))
+                    img_rect = img.get_rect()
+                    img_rect.x=col_count * tile_size
+                    img_rect.y=row_count * tile_size
+                    tile=(img,img_rect,1)
+                    self.tile_list.append(tile)
+                elif tile ==2:
+                    img = pygame.transform.scale(tile_ice[random.randint(0,2)], (tile_size, tile_size))
+                    img_rect = img.get_rect()
+                    img_rect.x=col_count * tile_size
+                    img_rect.y=row_count * tile_size
+                    tile=(img,img_rect,2)
+                    self.tile_list.append(tile)
+                elif tile ==3: 
+                    img = pygame.transform.scale(tile_wood, (tile_size, tile_size))
+                    img_rect = img.get_rect()
+                    img_rect.x=col_count * tile_size
+                    img_rect.y=row_count * tile_size
+                    tile=(img,img_rect,1)
+                    self.tile_list.append(tile)
+                elif tile ==4: 
+                    img = pygame.transform.scale(tile_leaves[random.randint(0,1)], (tile_size, tile_size))
+                    img_rect = img.get_rect()
+                    img_rect.x=col_count * tile_size
+                    img_rect.y=row_count * tile_size
+                    tile=(img,img_rect,1)
+                    self.tile_list.append(tile)
+                elif tile ==5: 
+                    img = pygame.transform.scale(tile_stone[random.randint(0,3)], (tile_size, tile_size))
+                    img_rect = img.get_rect()
+                    img_rect.x=col_count * tile_size
+                    img_rect.y=row_count * tile_size
+                    tile=(img,img_rect,1)
+                    self.tile_list.append(tile)
+                elif tile ==6:
+                    img = pygame.transform.scale(tile_snow, (tile_size, tile_size))
+                    img_rect = img.get_rect()
+                    img_rect.x=col_count * tile_size
+                    img_rect.y=row_count * tile_size
+                    tile=(img,img_rect,4)
+                    self.tile_list.append(tile)
+                elif tile ==7:
+                    r=random.randint(1,100)
+                    if r<10:
+                        img = pygame.transform.scale(tile_sand[1], (tile_size, tile_size))
+                    else:
+                        img = pygame.transform.scale(tile_sand[0], (tile_size, tile_size))
+                    img_rect = img.get_rect()
+                    img_rect.x=col_count * tile_size
+                    img_rect.y=row_count * tile_size
+                    tile=(img,img_rect,3)
+                    self.tile_list.append(tile)
+                elif tile ==8:
+                    img = pygame.transform.scale(tile_sandstone, (tile_size, tile_size))
+                    img_rect = img.get_rect()
+                    img_rect.x=col_count * tile_size
+                    img_rect.y=row_count * tile_size
+                    tile=(img,img_rect,1)
+                    self.tile_list.append(tile)
+                elif tile ==9:
+                    img = pygame.transform.scale(tile_end_stone, (tile_size, tile_size))
+                    img_rect = img.get_rect()
+                    img_rect.x=col_count * tile_size
+                    img_rect.y=row_count * tile_size
+                    tile=(img,img_rect,1)
+                    self.tile_list.append(tile)
+
+                
                 elif tile == 'p':
                     self.player_x=col_count * tile_size
                     self.player_y=row_count * tile_size
@@ -438,7 +534,7 @@ class Golf_Ball(pygame.sprite.Sprite):
         #check collision
         for tile in world.tile_list:
             #collisions x 
-                if tile[1].colliderect(self.rect.x+self.vel_x,self.rect.y,self.width,self.height):
+                if tile[1].colliderect(self.rect.x+0.5+self.vel_x,self.rect.y,self.width,self.height):
                     self.vel_x = -self.vel_x
 
 
@@ -463,6 +559,27 @@ class Golf_Ball(pygame.sprite.Sprite):
                                 self.vel_x-=5
                             elif self.vel_x<0:
                                 self.vel_x+=5
+                        elif tile[2]==2:
+                            if abs(self.vel_x) < 1:
+                                self.vel_x=0
+                            elif self.vel_x>0:
+                                self.vel_x-=0.1
+                            elif self.vel_x<0:
+                                self.vel_x+=0.1
+                        elif tile[2]==3:
+                            if abs(self.vel_x) < 10:
+                                self.vel_x=0
+                            elif self.vel_x>0:
+                                self.vel_x-=10
+                            elif self.vel_x<0:
+                                self.vel_x+=10
+                        elif tile[2]==4:
+                            if abs(self.vel_x) < 1:
+                                self.vel_x=0
+                            elif self.vel_x>0:
+                                self.vel_x-=0.75
+                            elif self.vel_x<0:
+                                self.vel_x+=0.75
                         
         dy+= self.vel_y
         dx+= self.vel_x
@@ -479,8 +596,6 @@ class Golf_Ball(pygame.sprite.Sprite):
         #update cords
         self.rect.x += dx
         self.rect.y += dy
-        if self.rect.bottom > screen_h:
-            self.rect.bottom = screen_h
         
 
 
@@ -521,12 +636,25 @@ restart_button = Button(screen_w/40, screen_h/40, r_img)
 start_button = Button(screen_w/2-325, screen_h/2,start_img)
 quit_button = Button(screen_w/2+25, screen_h/2,quit_img)
 
+
+test=True
+
 run = True
 while run==True:
 
     clock.tick(fps)
 
-    screen.blit(skybox_img,(0,0))
+    if main_menu==True:
+        screen.blit(pygame.transform.scale(skybox[0], (1000,1000)),(0,0))
+    elif level<3:
+        screen.blit(pygame.transform.scale(skybox[1], (1000,1000)),(0,0))
+    elif level<5:
+        screen.blit(pygame.transform.scale(skybox[2], (1000,1000)),(0,0))
+    elif level<7:
+        screen.blit(pygame.transform.scale(skybox[3], (1000,1000)),(0,0))
+    else:
+        screen.blit(pygame.transform.scale(skybox[4], (1000,1000)),(0,0))
+
     if main_menu==True:
         if quit_button.draw():
             run=False
@@ -542,6 +670,19 @@ while run==True:
             player.reset(world)
 
         #player won
+        key=pygame.key.get_pressed()
+        if key[pygame.K_y] and test==True:
+            test=False
+            level += 1
+            if level <= max_levels:
+                world_data=[]
+                world=World(reset_level(level))
+                game_over=0
+                game_over_ball=0
+                player.reset(world)
+        if key[pygame.K_y]==False:
+            test=True
+
         if game_over==1 and game_over_ball==1:
             level += 1
             if level <= max_levels:
