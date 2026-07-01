@@ -11,3 +11,14 @@ aby zresetować poziom należy nacisnąć guzik RESTART lub przycisk R na klawia
 
 
 KONTROLA DEBUGOWANIA: any przejść na następny poziom należy wcisnąć Y
+
+
+
+aby stworzyć własny poziom należy wyedytować plik level save za pomocą nowej tablicy
+proponowaną metodą jest wykożystanie tablicy w pliku excel
+
+
+
+Wszystkie grafiki wykorzystane w grze pochądzą z gry Minecraft, jej forów internetowych lub zostały wykonane przeze mnie
+
+Cały kod został napisany tylko i wyłącznie przeze mnie nie wykorzystano kodu pisanego przez sztuczną inteligencję ani gotowego kodu z forów internetowych
